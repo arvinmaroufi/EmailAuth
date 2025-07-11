@@ -57,3 +57,7 @@ class EmailLoginForm(forms.Form):
 
 class ForgetPasswordForm(forms.Form):
     email = forms.EmailField()
+
+
+class VerifyCodeForm(forms.Form):
+    code = forms.CharField(max_length=5)
