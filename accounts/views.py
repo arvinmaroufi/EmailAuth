@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import random
 from .models import VerificationCode
-from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm
+from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm, VerifyCodeForm
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
@@ -147,3 +147,58 @@ def forget_password(request):
         'form': form
     }
     return render(request, 'accounts/forget_password.html', context)
+
+
+def verify_code(request):
+    if request.user.is_authenticated:
+        return redirect('core:home')
+
+    VerificationCode.clean_expired_codes()
+
+    if request.method == 'POST':
+        form = VerifyCodeForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            try:
+                verification = VerificationCode.objects.get(code=code, is_used=False)
+                if verification.is_valid(code):
+                    verification.is_used = True
+                    verification.save()
+                    verification.delete()
+
+                    verification_type = request.session.get('verification_type')
+                    user = verification.user
+
+                    if verification_type == 'register':
+                        user.is_active = True
+                        user.save()
+                        login(request, user)
+                        messages.success(request, 'تایید موفقیت‌ آمیز بود. وارد شدید.')
+                        return redirect('accounts:dashboard')
+                    elif verification_type == 'login':
+                        user.is_active = True
+                        user.save()
+                        login(request, user)
+                        messages.success(request, 'تایید موفقیت ‌آمیز بود. وارد شدید.')
+                        return redirect('accounts:dashboard')
+                    elif verification_type == 'reset_password':
+                        request.session['verified_user_id'] = user.id
+                        return redirect('accounts:reset_password')
+                else:
+                    messages.error(request, 'کد تایید نامعتبر یا منقضی شده است.')
+            except VerificationCode.DoesNotExist:
+                messages.error(request, 'کد تایید نامعتبر است.')
+    else:
+        form = VerifyCodeForm()
+
+    try:
+        latest_code = VerificationCode.objects.filter(is_used=False).latest('code_expiry')
+        remaining_seconds = int((latest_code.code_expiry - timezone.now()).total_seconds())
+    except VerificationCode.DoesNotExist:
+        remaining_seconds = 120
+
+    context = {
+        'form': form,
+        'remaining_seconds': remaining_seconds
+    }
+    return render(request, 'accounts/verify_code.html', context)
