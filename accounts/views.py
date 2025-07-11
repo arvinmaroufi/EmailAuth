@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 import random
 from .models import VerificationCode
-from .forms import RegisterForm
+from .forms import RegisterForm, UsernameLoginForm
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
+from django.contrib.auth import authenticate, login
 
 
 def generate_verification_code():
@@ -47,3 +48,26 @@ def register(request):
         'form': form
     }
     return render(request, 'accounts/register.html', context)
+
+
+def username_login(request):
+    if request.user.is_authenticated:
+        return redirect('core:home')
+
+    if request.method == 'POST':
+        form = UsernameLoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('accounts:dashboard')
+            messages.error(request, 'نام کاربری یا رمز عبور اشتباه است.')
+    else:
+        form = UsernameLoginForm()
+
+    context = {
+        'form': form
+    }
+    return render(request, 'accounts/username_login.html', context)
