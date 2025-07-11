@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     # installed apps
     'django_cleanup.apps.CleanupConfig',
     'jalali_date',
+    # my apps
+    'core',
 ]
 
 MIDDLEWARE = [
