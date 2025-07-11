@@ -49,3 +49,7 @@ class UsernameLoginForm(forms.Form):
             user = authenticate(username=username, password=password)
             if user is None:
                 raise ValidationError("نام کاربری یا رمز عبور نادرست است.", code='invalid_info')
+
+
+class EmailLoginForm(forms.Form):
+    email = forms.EmailField()
