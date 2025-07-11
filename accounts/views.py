@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import random
 from .models import VerificationCode
-from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm, VerifyCodeForm
+from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm, VerifyCodeForm, ResetPasswordForm
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
@@ -202,3 +202,27 @@ def verify_code(request):
         'remaining_seconds': remaining_seconds
     }
     return render(request, 'accounts/verify_code.html', context)
+
+
+def reset_password(request):
+    if request.user.is_authenticated:
+        return redirect('core:home')
+
+    if 'verified_user_id' not in request.session:
+        return redirect('accounts:forget_password')
+    user = User.objects.get(id=request.session['verified_user_id'])
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            user.set_password(form.cleaned_data['new_password'])
+            user.save()
+            del request.session['verified_user_id']
+            messages.success(request, 'رمز عبور با موفقیت تغییر کرد. لطفاً وارد شوید.')
+            return redirect('accounts:username_login')
+    else:
+        form = ResetPasswordForm()
+
+    context = {
+        'form': form
+    }
+    return render(request, 'accounts/reset_password.html', context)
