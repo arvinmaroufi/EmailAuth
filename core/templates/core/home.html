@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه اصلی | EmailAuth</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container">
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{% url 'core:home' %}" class="active">صفحه اصلی</a></li>
+                    {% if request.user.is_authenticated %}
+                        <li><a href="#dashboard">داشبورد</a></li>
+                    {% else %}
+                        <li><a href="#email_login">ورود</a></li>
+                        <li><a href="#register">ثبت ‌نام</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <h1 class="logo">EmailAuth</h1>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <section class="hero">
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <h2>سیستم احراز هویت مدرن با ایمیل</h2>
+            <p>راه‌حلی امن و کاربرپسند برای مدیریت کاربران در پروژه ‌های شما</p>
+            <div class="hero-buttons">
+                {% if not request.user.is_authenticated %}
+                    <a href="#register" class="btn-primary">همین حالا شروع کنید</a>
+                    <a href="#features" class="btn-primary">مشاهده ویژگی ‌ها</a>
+                {% else %}
+                    <a href="#dashboard" class="btn-primary">ورود به داشبورد</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="feature-card floating">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>امنیت بالا</h3>
+                <p>با استفاده از آخرین تکنولوژی‌ های امنیتی، اطلاعات کاربران شما همیشه در امان خواهد بود.</p>
+            </div>
+            <div class="feature-card floating" style="animation-delay: 0.2s;">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>سرعت فوق‌العاده</h3>
+                <p>بهینه ‌سازی شده برای عملکرد سریع و تجربه کاربری روان در تمام دستگاه ‌ها.</p>
+            </div>
+            <div class="feature-card floating" style="animation-delay: 0.4s;">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>واکنش‌گرا</h3>
+                <p>طراحی کاملاً ریسپانسیو که در تمام دستگاه‌ ها به بهترین شکل نمایش داده می‌شود.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- آمار -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">+500</div>
+                <div class="stat-label">کاربر فعال</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">آپتایم</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">پشتیبانی</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">+50</div>
+                <div class="stat-label">پروژه موفق</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta">
+        <div class="cta-card floating">
+            <h2>آماده شروع هستید؟</h2>
+            <p>همین حالا ثبت‌ نام کنید و از تمام ویژگی‌ های سیستم احراز هویت ما استفاده کنید.</p>
+            {% if not request.user.is_authenticated %}
+                <a href="#register" class="btn-floating">ثبت‌ نام رایگان</a>
+            {% else %}
+                <a href="#dashboard" class="btn-floating">ورود به داشبورد</a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© تمامی حقوق این پروژه محفوظ است - 2025</p>
+        </div>
+    </footer>
+
+</body>
+</html>
