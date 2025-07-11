@@ -61,3 +61,16 @@ class ForgetPasswordForm(forms.Form):
 
 class VerifyCodeForm(forms.Form):
     code = forms.CharField(max_length=5)
+
+
+class ResetPasswordForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=20)
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_new_password = cleaned_data.get('confirm_new_password')
+        if new_password and confirm_new_password and new_password != confirm_new_password:
+            raise ValidationError("رمز های عبور جدید مطابقت ندارند.")
+        return cleaned_data
