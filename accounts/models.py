@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db.models.signals import post_save
+from django.utils import timezone
+from datetime import timedelta
 
 
 class Profile(models.Model):
@@ -19,6 +21,38 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"پروفایل {self.user.username}"
+
+
+class VerificationCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='verification_codes', verbose_name='کاربر')
+    code = models.CharField(max_length=5, verbose_name='کد تایید')
+    code_expiry = models.DateTimeField(verbose_name='تاریخ انقضای کد')
+    is_used = models.BooleanField(default=False, verbose_name='استفاده شده؟')
+
+    class Meta:
+        verbose_name = 'کد تایید'
+        verbose_name_plural = 'کد های تایید'
+
+    def __str__(self):
+        return self.code
+
+    def is_valid(self, code):
+        if self.code == code and not self.is_used and self.code_expiry:
+            if timezone.now() <= self.code_expiry:
+                return True
+            else:
+                self.delete()
+                return False
+        return False
+
+    def set_code(self, code):
+        self.code = code
+        self.code_expiry = timezone.now() + timedelta(minutes=2)
+        self.save()
+
+    @classmethod
+    def clean_expired_codes(cls):
+        cls.objects.filter(models.Q(is_used=True) | models.Q(code_expiry__lt=timezone.now())).delete()
 
 
 def create_user_profile(sender, instance, created, **kwargs):
