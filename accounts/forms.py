@@ -53,3 +53,7 @@ class UsernameLoginForm(forms.Form):
 
 class EmailLoginForm(forms.Form):
     email = forms.EmailField()
+
+
+class ForgetPasswordForm(forms.Form):
+    email = forms.EmailField()
