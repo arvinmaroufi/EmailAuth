@@ -7,7 +7,7 @@ from datetime import timedelta
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
@@ -254,3 +254,8 @@ def resend_code(request):
         return JsonResponse({'success': True})
     except VerificationCode.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'No active verification code found.'})
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('core:home')
