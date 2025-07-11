@@ -9,6 +9,8 @@ from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 
 def generate_verification_code():
@@ -226,3 +228,29 @@ def reset_password(request):
         'form': form
     }
     return render(request, 'accounts/reset_password.html', context)
+
+
+@require_POST
+def resend_code(request):
+    try:
+        latest_code = VerificationCode.objects.filter(is_used=False).latest('code')
+        user = latest_code.user
+
+        VerificationCode.objects.filter(user=user, is_used=False).delete()
+
+        code = generate_verification_code()
+        VerificationCode.objects.create(
+            user=user,
+            code=code,
+            code_expiry=timezone.now() + timedelta(minutes=2)
+        )
+        send_mail(
+            'کد تایید جدید',
+            f'خوش آمدید! کد تایید جدیدی برای شما ایجاد شده است.\n\nکد تایید شما: {code}\nلطفاً این کد را در صفحه تایید وارد کنید.',
+            settings.EMAIL_HOST_USER,
+            [user.email],
+            fail_silently=False
+        )
+        return JsonResponse({'success': True})
+    except VerificationCode.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'No active verification code found.'})
