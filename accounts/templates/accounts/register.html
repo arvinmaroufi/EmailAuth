@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت ‌نام</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}"/>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>ایجاد حساب کاربری</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="نام کاربری">
+            {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                    <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <input type="email" name="email" placeholder="ایمیل">
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <input type="password" name="password" placeholder="رمز عبور">
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <input type="password" name="confirm_password" placeholder="تکرار رمز عبور">
+            {% if form.confirm_password.errors %}
+                {% for error in form.confirm_password.errors %}
+                    <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <button type="submit" class="btn">ثبت ‌نام</button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{% url 'accounts:username_login' %}">حساب دارم | ورود</a>
+        </div>
+    </div>
+</body>
+</html>
