@@ -12,4 +12,6 @@ urlpatterns = [
     path('reset-password/', views.reset_password, name='reset_password'),
     path('resend-code/', views.resend_code, name='resend_code'),
     path('logout/', views.user_logout, name='logout'),
+
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]
