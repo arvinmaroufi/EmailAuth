@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import random
 from .models import VerificationCode
-from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm, VerifyCodeForm, ResetPasswordForm
+from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm, VerifyCodeForm, ResetPasswordForm, EditProfileForm
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
@@ -265,3 +265,26 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     return render(request, 'accounts/dashboard.html', {'user': request.user})
+
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+
+            if 'image-clear' in request.POST:
+                profile = request.user.profile
+                profile.image.delete()
+                profile.image = None
+                profile.save()
+
+            return redirect('accounts:dashboard')
+    else:
+        form = EditProfileForm(instance=request.user)
+
+    context = {
+        'form': form
+    }
+    return render(request, 'accounts/edit_profile.html', context)
