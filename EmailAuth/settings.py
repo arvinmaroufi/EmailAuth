@@ -120,6 +120,8 @@ MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = 'accounts:login-email'
+
 
 # Email settings (configure based on your email provider)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
