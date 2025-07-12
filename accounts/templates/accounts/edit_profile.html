@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویرایش پروفایل</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}"/>
+</head>
+<body>
+
+    <!-- Hamburger button -->
+    <button class="menu-toggle" id="menuToggle">&#9776;</button>
+
+    <div class="dashboard-container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>داشبورد</h2>
+            <ul>
+                <li><a href="{% url 'accounts:dashboard' %}">پروفایل من</a></li>
+                <li><a href="{% url 'accounts:edit_profile' %}" class="active">ویرایش پروفایل</a></li>
+                <li><a href="{% url 'accounts:change_password' %}">تغییر رمز عبور</a></li>
+                <li><a href="{% url 'core:home' %}">بازگشت به خانه</a></li>
+                <li><a href="{% url 'accounts:logout' %}">خروج از حساب</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-content">
+            <h1>ویرایش پروفایل</h1>
+
+            <form class="form-card" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <label>نام کاربری:</label>
+                <input type="text" name="username" placeholder="نام کاربری خود را وارد کنید" value="{{ form.username.value }}">
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <label>ایمیل:</label>
+                <input type="email" name="email" placeholder="ایمیل خود را وارد کنید" value="{{ form.email.value }}">
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <label>نام:</label>
+                <input type="text" name="first_name" placeholder="نام خود را وارد کنید" value="{{ form.first_name.value|default_if_none:'' }}">
+                {% if form.first_name.errors %}
+                    {% for error in form.first_name.errors %}
+                        <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <label>نام خانوادگی:</label>
+                <input type="text" name="last_name" placeholder="نام خود را وارد کنید" value="{{ form.last_name.value|default_if_none:'' }}">
+                {% if form.last_name.errors %}
+                    {% for error in form.last_name.errors %}
+                        <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <label>شماره تلفن:</label>
+                <input type="tel" name="phone_number" maxlength="11" placeholder="شماره تماس خود را وارد کنید" value="{{ form.phone_number.value|default:'' }}">
+                {% if form.phone_number.errors %}
+                    {% for error in form.phone_number.errors %}
+                        <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <label>تصویر پروفایل:</label>
+                {% if request.user.profile.image %}
+                    <div class="current-image">
+                        <label>تصویر فعلی:
+                            <a href="{{ request.user.profile.image.url }}" target="_blank">{{ request.user.profile.image.name|truncatechars:30 }}</a>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="image-clear" id="image-clear_id">
+                            حذف تصویر فعلی
+                        </label>
+                    </div>
+                {% endif %}
+                <input type="file" name="image">
+
+                <button type="submit" class="btn">ذخیره تغییرات</button>
+            </form>
+        </main>
+
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}" type="text/javascript"></script>
+
+</body>
+</html>
