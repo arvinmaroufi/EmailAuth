@@ -145,3 +145,17 @@ class EditProfileForm(forms.ModelForm):
         if last_name and len(last_name) > 50:
             raise ValidationError("نام خانوادگی نمی ‌تواند بیشتر از 50 کاراکتر باشد.")
         return last_name
+
+
+class ChangePasswordForm(forms.Form):
+    current_password = forms.CharField(widget=forms.PasswordInput)
+    new_password = forms.CharField(widget=forms.PasswordInput, min_length=8, max_length=20)
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_new_password = cleaned_data.get('confirm_new_password')
+        if new_password and confirm_new_password and new_password != confirm_new_password:
+            raise ValidationError("رمز های عبور جدید مطابقت ندارند.")
+        return cleaned_data
