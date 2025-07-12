@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد کاربر</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}"/>
+</head>
+<body>
+
+    <!-- Hamburger button -->
+    <button class="menu-toggle" id="menuToggle">&#9776;</button>
+
+    <div class="dashboard-container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>داشبورد</h2>
+            <ul>
+                <li><a href="{% url 'accounts:dashboard' %}" class="active">پروفایل من</a></li>
+                <li><a href="{% url 'accounts:edit_profile' %}">ویرایش پروفایل</a></li>
+                <li><a href="{% url 'accounts:change_password' %}">تغییر رمز عبور</a></li>
+                <li><a href="{% url 'core:home' %}">بازگشت به خانه</a></li>
+                <li><a href="{% url 'accounts:logout' %}">خروج از حساب</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-content">
+            <h1>خوش آمدید، کاربر عزیز!</h1>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" style="background-color: green; color: white; margin-bottom: 10px; padding: 5px; border-radius: 5px">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                <script>
+                    setTimeout(function() {
+                        document.querySelectorAll('.alert').forEach(function(el) {
+                            el.style.display = 'none';
+                        });
+                    }, 5000);
+                </script>
+            {% endif %}
+
+            <div class="profile-card">
+                {% if user.profile.image %}
+                    <img src="{{ user.profile.image.url }}" alt="{{ user.username }}">
+                {% else %}
+                    <img src="{% static 'img/default_profile_image.png' %}" alt="{{ user.username }}">
+                {% endif %}
+                <h2>نام کاربری: {{ user.username }}</h2>
+                <p>نام: {{ user.profile.first_name|default:'ثبت نشده' }}</p>
+                <p>نام خانوادگی: {{ user.profile.last_name|default:'ثبت نشده' }}</p>
+                <p>ایمیل: {{ user.email }}</p>
+                <p>شماره تلفن: {{ user.profile.phone_number|default:'ثبت نشده' }}</p>
+            </div>
+        </main>
+
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}" type="text/javascript"></script>
+
+</body>
+</html>
