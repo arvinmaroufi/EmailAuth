@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود با ایمیل</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}"/>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>ورود با ایمیل</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                     style="background-color: green; color: white; margin-bottom: 10px; padding: 5px; border-radius: 5px">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <script>
+                setTimeout(function () {
+                    document.querySelectorAll('.alert').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
+                }, 5000);
+            </script>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <p style="font-size: 12px; color: red; text-align: right;">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+            <input type="email" name="email" placeholder="ایمیل">
+            <button type="submit" class="btn">ارسال کد تایید</button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{% url 'accounts:username_login' %}">ورود با نام کاربری</a>
+            |
+            <a href="{% url 'accounts:register' %}">ثبت ‌نام</a>
+        </div>
+    </div>
+</body>
+</html>
