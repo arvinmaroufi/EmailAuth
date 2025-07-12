@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 
 def generate_verification_code():
@@ -259,3 +260,8 @@ def resend_code(request):
 def user_logout(request):
     logout(request)
     return redirect('core:home')
+
+
+@login_required
+def dashboard(request):
+    return render(request, 'accounts/dashboard.html', {'user': request.user})
