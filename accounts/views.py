@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import random
 from .models import VerificationCode
-from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm, VerifyCodeForm, ResetPasswordForm, EditProfileForm
+from .forms import RegisterForm, UsernameLoginForm, EmailLoginForm, ForgetPasswordForm, VerifyCodeForm, ResetPasswordForm, EditProfileForm, ChangePasswordForm
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
@@ -288,3 +288,25 @@ def edit_profile(request):
         'form': form
     }
     return render(request, 'accounts/edit_profile.html', context)
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            if user.check_password(form.cleaned_data['current_password']):
+                user.set_password(form.cleaned_data['new_password'])
+                user.save()
+                logout(request)
+                messages.success(request, 'رمز عبور تغییر کرد. لطفاً دوباره وارد شوید.')
+                return redirect('accounts:username_login')
+            messages.error(request, 'رمز عبور فعلی اشتباه است.')
+    else:
+        form = ChangePasswordForm()
+
+    context = {
+        'form': form
+    }
+    return render(request, 'accounts/change_password.html', context)
