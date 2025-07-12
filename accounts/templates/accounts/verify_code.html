@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تایید کد</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}"/>
+    <style>
+        .timer {
+            font-size: 18px;
+            color: #333;
+            margin: 10px 0;
+        }
+        .resend-link {
+            display: none;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>کد تایید را وارد کنید</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                     style="background-color: green; color: white; margin-bottom: 10px; padding: 5px; border-radius: 5px">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <script>
+                setTimeout(function () {
+                    document.querySelectorAll('.alert').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
+                }, 5000);
+            </script>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" maxlength="5" name="code" id="code" placeholder="کد 5 رقمی را وارد کنید">
+            <button type="submit" class="btn">تایید</button>
+        </form>
+
+        <div class="timer" id="timer">02:00</div>
+        <div class="auth-links">
+            <a href="#" id="resend-link" class="resend-link">ارسال مجدد کد</a>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = {{ remaining_seconds }};
+        const timerElement = document.getElementById('timer');
+        const resendLink = document.getElementById('resend-link');
+        let timerInterval;
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerElement.style.display = 'none';
+                resendLink.style.display = 'block';
+            } else {
+                timeLeft--;
+            }
+        }
+
+        function initTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            timerElement.style.display = 'block';
+            resendLink.style.display = 'none';
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        initTimer();
+
+        resendLink.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            if (confirm('آیا مایل به دریافت کد تایید جدید هستید؟')) {
+                fetch("{% url 'accounts:resend_code' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('کد تایید جدید با موفقیت ارسال شد!');
+                        timeLeft = 120;
+                        initTimer();
+                    } else {
+                        alert('خطا در ارسال کد تایید جدید: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('خطا در ارتباط با سرور');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
