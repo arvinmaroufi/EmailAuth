@@ -18,10 +18,10 @@
                 <ul class="nav-links">
                     <li><a href="{% url 'core:home' %}" class="active">صفحه اصلی</a></li>
                     {% if request.user.is_authenticated %}
-                        <li><a href="#dashboard">داشبورد</a></li>
+                        <li><a href="{% url 'accounts:dashboard' %}">داشبورد</a></li>
                     {% else %}
-                        <li><a href="#email_login">ورود</a></li>
-                        <li><a href="#register">ثبت ‌نام</a></li>
+                        <li><a href="{% url 'accounts:email_login' %}">ورود</a></li>
+                        <li><a href="{% url 'accounts:register' %}">ثبت ‌نام</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -37,10 +37,10 @@
             <p>راه‌حلی امن و کاربرپسند برای مدیریت کاربران در پروژه ‌های شما</p>
             <div class="hero-buttons">
                 {% if not request.user.is_authenticated %}
-                    <a href="#register" class="btn-primary">همین حالا شروع کنید</a>
+                    <a href="{% url 'accounts:register' %}" class="btn-primary">همین حالا شروع کنید</a>
                     <a href="#features" class="btn-primary">مشاهده ویژگی ‌ها</a>
                 {% else %}
-                    <a href="#dashboard" class="btn-primary">ورود به داشبورد</a>
+                    <a href="{% url 'accounts:dashboard' %}" class="btn-primary">ورود به داشبورد</a>
                 {% endif %}
             </div>
         </div>
@@ -73,7 +73,7 @@
         </div>
     </section>
 
-    <!-- آمار -->
+    <!-- Statistics -->
     <section class="stats">
         <div class="stats-container">
             <div class="stat-item">
@@ -101,9 +101,9 @@
             <h2>آماده شروع هستید؟</h2>
             <p>همین حالا ثبت‌ نام کنید و از تمام ویژگی‌ های سیستم احراز هویت ما استفاده کنید.</p>
             {% if not request.user.is_authenticated %}
-                <a href="#register" class="btn-floating">ثبت‌ نام رایگان</a>
+                <a href="{% url 'accounts:register' %}" class="btn-floating">ثبت‌ نام رایگان</a>
             {% else %}
-                <a href="#dashboard" class="btn-floating">ورود به داشبورد</a>
+                <a href="{% url 'accounts:dashboard' %}" class="btn-floating">ورود به داشبورد</a>
             {% endif %}
         </div>
     </section>
